@@ -1,0 +1,18 @@
+{
+  "name": "hanoi-scratch",
+  "version": "1.0.0",
+  "description": "",
+  "main": "build/app.js",
+  "dependencies": {
+    "http-server": "^0.12.3",
+    "ts-node": "^10.0.0",
+    "typescript": "^4.3.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "http-server public"
+  },
+  "author": "",
+  "license": "ISC"
+}
