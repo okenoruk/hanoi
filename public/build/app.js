@@ -15,7 +15,7 @@ var SimpleGame = /** @class */ (function () {
         this.floor = new Phaser.Rectangle(0, 500, 800, 50);
     };
     SimpleGame.prototype.render = function () {
-        this.game.debug.rectangle(this.floor, '#ff00aa');
+        this.game.debug.rectangle(this.floor, '#708090');
         for (var i = 1; i <= this.disks; i++) {
             // draw disks
         }

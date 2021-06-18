@@ -94,6 +94,9 @@ declare class Phaser {
 
 }
 
+interface MSPointerEvent {
+}
+
 declare module Phaser {
 
     enum blendModes {
