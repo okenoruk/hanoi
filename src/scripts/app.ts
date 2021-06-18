@@ -16,7 +16,7 @@ class SimpleGame {
   disks: number;
 
   floor: Phaser.Rectangle;
-  objDisks: Disk[];
+  objDisks: IDisk[];
 
   preload() {
     this.game.load.image('bg', 'img/sky.png');
@@ -28,6 +28,8 @@ class SimpleGame {
     const bg = this.game.add.sprite(this.game.world.centerX, this.game.world.centerY, 'bg');
     bg.anchor.setTo(0.5, 0.5);
 
+    this.setWorld();
+
     this.floor = new Phaser.Rectangle(0, 500, this.game.width, 50);
 
     this.objDisks = [];
@@ -35,13 +37,26 @@ class SimpleGame {
     this.game.time.events.loop(50, this.createDisks.bind(this));
   }
 
+  setWorld() {
+    this.game.physics.startSystem(Phaser.Physics.ARCADE);
+
+    //  Set the world (global) gravity
+    this.game.physics.arcade.gravity.y = 100;
+  }
+
   createDisks() {
     console.log('create disks');
 
     for (let i = 1 ; i <= this.disks ; i ++) {
       // draw disks
-      if (typeof this.objDisks[i] === 'undefined') {
+      if (this.objDisks.length === 0 || typeof this.objDisks[i - 1] === 'undefined') {
         const graphic = this.game.add.graphics(10 * i, 20 + 5 * i);
+
+        // Enable physics
+        this.game.physics.enable(graphic);
+        graphic.body.collideWorldBounds = true;
+        graphic.body.bounce.y = 0.8;
+
         const color = Phaser.Color.getRandomColor(0, 255);
         this.objDisks.push({graphic, color});
       }
@@ -49,13 +64,16 @@ class SimpleGame {
   }
 
   update() {
-    console.log('update');
-    console.log(this.objDisks);
-
     this.objDisks.forEach(d => {
       d.graphic.beginFill(d.color, 1);//We fill rectangle with random color
       d.graphic.drawRoundedRect(0, 10, 30, 10, 10);
       d.graphic.endFill();
+
+      if (d.graphic.y >= 500) {
+        // let bounce = this.game.add.tween(d.graphic);
+        // bounce.to({ y: this.game.world.height - 100 }, 1000 + Math.random() * 3000, Phaser.Easing.Bounce.In);
+        // bounce.start();
+      }
     });
   }
 

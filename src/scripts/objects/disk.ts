@@ -1,6 +1,6 @@
 /// <reference path="../types/phaser.d.ts"/>
 
-interface Disk {
+interface IDisk {
   graphic: Phaser.Graphics;
   color: number;
 }
