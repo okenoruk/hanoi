@@ -30,8 +30,6 @@ class SimpleGame {
 
     this.setWorld();
 
-    this.floor = new Phaser.Rectangle(0, 500, this.game.width, 50);
-
     this.objDisks = [];
 
     this.game.time.events.loop(50, this.createDisks.bind(this));
@@ -40,8 +38,13 @@ class SimpleGame {
   setWorld() {
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
+    this.floor = new Phaser.Rectangle(0, 500, this.game.width, 50);
+
     //  Set the world (global) gravity
     this.game.physics.arcade.gravity.y = 100;
+
+    //  Set bounds
+    this.game.physics.arcade.setBounds(0, 0, this.game.width, this.game.height - 100 - (this.floor.height / 2));
   }
 
   createDisks() {
@@ -51,11 +54,16 @@ class SimpleGame {
       // draw disks
       if (this.objDisks.length === 0 || typeof this.objDisks[i - 1] === 'undefined') {
         const graphic = this.game.add.graphics(10 * i, 20 + 5 * i);
+        graphic.lineStyle(1, Phaser.Color.BLACK);
 
         // Enable physics
         this.game.physics.enable(graphic);
         graphic.body.collideWorldBounds = true;
         graphic.body.bounce.y = 0.8;
+
+        // Enable drag
+        graphic.inputEnabled = true;
+        graphic.input.enableDrag(false, true);
 
         const color = Phaser.Color.getRandomColor(0, 255);
         this.objDisks.push({graphic, color});
@@ -69,11 +77,14 @@ class SimpleGame {
       d.graphic.drawRoundedRect(0, 10, 30, 10, 10);
       d.graphic.endFill();
 
-      if (d.graphic.y >= 500) {
-        // let bounce = this.game.add.tween(d.graphic);
-        // bounce.to({ y: this.game.world.height - 100 }, 1000 + Math.random() * 3000, Phaser.Easing.Bounce.In);
-        // bounce.start();
+      // Stop disk if dragged
+      if (d.graphic.input.isDragged) {
+        d.graphic.body.velocity.setTo(0, 0);
       }
+
+      // let bounce = this.game.add.tween(d.graphic);
+      // bounce.to({ y: this.game.world.height - 100 }, 1000 + Math.random() * 3000, Phaser.Easing.Bounce.In);
+      // bounce.start();
     });
   }
 
