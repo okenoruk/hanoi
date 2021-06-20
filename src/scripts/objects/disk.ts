@@ -3,4 +3,5 @@
 interface IDisk {
   graphic: Phaser.Graphics;
   color: number;
+  order: number;
 }

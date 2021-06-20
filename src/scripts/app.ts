@@ -1,6 +1,6 @@
 /// <reference path="types/phaser.d.ts"/>
 
-class SimpleGame {
+class TowerGame {
 
   constructor(disks = 3) {
     this.disks = disks;
@@ -17,9 +17,11 @@ class SimpleGame {
 
   floor: Phaser.Rectangle;
   objDisks: IDisk[];
+  rods: Phaser.Sprite[];
 
   preload() {
     this.game.load.image('bg', 'img/sky.png');
+    this.game.load.image('rod', 'img/rod.png');
   }
 
   create() {
@@ -32,7 +34,10 @@ class SimpleGame {
 
     this.objDisks = [];
 
-    this.game.time.events.loop(50, this.createDisks.bind(this));
+    // this.game.time.events.loop(50, this.createDisks.bind(this));
+
+    this.createRods();
+    this.createDisks();
   }
 
   setWorld() {
@@ -59,14 +64,35 @@ class SimpleGame {
         // Enable physics
         this.game.physics.enable(graphic);
         graphic.body.collideWorldBounds = true;
-        graphic.body.bounce.y = 0.8;
+        graphic.body.bounce.setTo(0.2, 0.2);
 
         // Enable drag
         graphic.inputEnabled = true;
         graphic.input.enableDrag(false, true);
 
         const color = Phaser.Color.getRandomColor(0, 255);
-        this.objDisks.push({graphic, color});
+        this.objDisks.push({graphic, color, order: i});
+      }
+    }
+  }
+
+  createRods() {
+    this.rods = [];
+
+    for (let i = 0 ; i < 3 ; i++) {
+      if (this.rods.length === 0 || typeof this.rods[i] === 'undefined') {
+        const rod = this.game.add.sprite(100 * i, 400, 'rod');
+        rod.width = 20;
+        rod.height = 100;
+
+        // Enable physics
+        this.game.physics.enable(rod);
+        rod.body.collideWorldBounds = true;
+        // rod.body.checkCollision.up = false;
+        // rod.body.checkCollision.down = false;
+        // rod.body.immovable = true;
+
+        this.rods.push(rod);
       }
     }
   }
@@ -74,7 +100,7 @@ class SimpleGame {
   update() {
     this.objDisks.forEach(d => {
       d.graphic.beginFill(d.color, 1);//We fill rectangle with random color
-      d.graphic.drawRoundedRect(0, 10, 30, 10, 10);
+      d.graphic.drawRoundedRect(0, 10, (30 * this.disks) / d.order, 10, 10);
       d.graphic.endFill();
 
       // Stop disk if dragged
@@ -82,9 +108,10 @@ class SimpleGame {
         d.graphic.body.velocity.setTo(0, 0);
       }
 
-      // let bounce = this.game.add.tween(d.graphic);
-      // bounce.to({ y: this.game.world.height - 100 }, 1000 + Math.random() * 3000, Phaser.Easing.Bounce.In);
-      // bounce.start();
+      // Add collision
+      this.rods.forEach((rod) => {
+        this.game.physics.arcade.collide(rod, d.graphic);
+      });
     });
   }
 
@@ -94,5 +121,5 @@ class SimpleGame {
 }
 
 window.onload = () => {
-  const game = new SimpleGame();
+  const game = new TowerGame();
 };
